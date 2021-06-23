@@ -26,17 +26,33 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.db = pd.read_csv("code.csv")
-        self.LEVEL = self.db.shape[1] - 1
+        self.LEVEL = self.db.shape[1] - 1 # hardcoded
 
         self.setWindowTitle("Code Library")
 
         pagelayout = QVBoxLayout()
         menu_layout = QHBoxLayout()
-        self.stacklayout = QStackedLayout()
-        run_layout = QHBoxLayout()
 
+        main_layout = QHBoxLayout()
+        self.stacklayout = QStackedLayout()
+
+        des_label_title = QLabel("Description:")
+        self.des_label = QLabel("haha")
+        self.des_label.setWordWrap(True)
+        des_layout = QVBoxLayout()
+        des_layout.addWidget(des_label_title)
+        des_layout.addWidget(self.des_label)
+
+        des_layout.setAlignment(Qt.AlignTop)
+        # des_label_title.setAlignment(Qt.AlignTop)
+        # self.des_label.setAlignment(Qt.AlignTop)
+
+        main_layout.addLayout(self.stacklayout, 5)
+        main_layout.addLayout(des_layout, 5)
+
+        run_layout = QHBoxLayout()
         pagelayout.addLayout(menu_layout)
-        pagelayout.addLayout(self.stacklayout)
+        pagelayout.addLayout(main_layout)
         pagelayout.addLayout(run_layout)
 
         self.list = [ListWidget(i) for i in range(self.LEVEL)]
@@ -44,6 +60,7 @@ class MainWindow(QMainWindow):
             i.itemClicked.connect(self.listClick)
             # i.setSortingEnabled(True)
 
+        # set up the first list
         self.list[0].setup(sorted(set(self.db.iloc[:,0])))
         self.list[0].createMap(self.db.iloc[self.getCurrentSelectedRows()])
 
@@ -64,6 +81,7 @@ class MainWindow(QMainWindow):
         self.test_btn.pressed.connect(self.test)
         run_layout.addWidget(self.test_btn)
 
+        # hardcoded
         self.stacklayout.addWidget(self.list[0])
         self.stacklayout.addWidget(self.list[1])
 

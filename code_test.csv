@@ -1,0 +1,15 @@
+lv1,lv2,lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,,description,directory
+Bond,Cash Bond,,,,,,,,,,Open a file in the desktop,C:\Users\axie\Desktop\FIBlotter-20210622_1220AM.csv
+Bond,UST,,,,,,,,,,Run RTL in desktop,C:\Users\axie\Desktop\RTL.py
+Bond,Convertible Bond,,,,,,,,,,,
+Cash Equity,CN,,,,,,,,,,,
+Cash Equity,JP,,,,,,,,,,,
+Cash Equity,HK,,,,,,,,,,,
+Swap,IRS,,,,,,,,,,,
+Swap,TRS,,,,,,,,,,,
+Swap,CDS,,,,,,,,,,,
+Swap,CFDXX,,,,,,,,,,,
+Swap,CFD,CN,GS,,,,,,,,,
+Swap,CFD,HK,NOMURA,,,,,,,,,
+Swap,CFD,HK,NOMURA,,,,,,,,,
+Others,RTL,,,,,,,,,,,
