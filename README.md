@@ -3,7 +3,7 @@ A PyQt application centralizing different files/ scripts with a csv file as the 
 
 The inside structure of the application is identical to the one in code.csv. Functions could be added under different sections. For example, for the function UST checking put under UST under Bond (Bond > UST > UST checking), it should be put in order in the csv file as shown in the image.
 
-![alt text](https://github.com/alanxy/code_library/blob/master/UST_level.PNG "UST checking")
+<!-- ![alt text](https://github.com/alanxy/code_library/blob/master/UST_level.PNG "UST checking") -->
 
 There are a total of 10 levels that could be added and is possible to extend. After a blank column, there are three columns, namely description, directory and require_input.
 1. desctiption: a simple description on your functionality, where you type in the csv will be reflected in the application.
