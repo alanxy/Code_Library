@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.db = pd.read_csv("code.csv")
-        self.LEVEL = self.db.shape[1] - 4 # hardcoded
+        self.LEVEL = self.db.shape[1] - (len(self.db.columns) - [i for i, word in enumerate(self.db.columns) if word.startswith('Unnamed:')][0])
 
         self.setWindowTitle("Code Library")
 
