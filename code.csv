@@ -1,17 +1,2 @@
 lv1,lv2,lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,,description,directory,require_input
-Bond,Cash Bond,,,,,,,,,,Open a file in the desktop Open a file in the desktop Open a file in the desktop Open a file in the desktop Open a file in the desktop Open a file in the desktop Open a file in the desktop,C:\Users\axie\Desktop\FIBlotter-20210622_1220AM.csv,
-Bond,UST,,,,,,,,,,Run RTL in desktop,C:\Users\axie\Desktop\RTL.py,Please input RTL
-Bond,Convertible Bond,,,,,,,,,,,,
-Cash Equity,CN,,,,,,,,,,,,
-Cash Equity,JP,,,,,,,,,,,,
-Cash Equity,HK,,,,,,,,,,,,
-Swap,IRS,,,,,,,,,,,,
-Swap,TRS,,,,,,,,,,,,
-Swap,CDS,,,,,,,,,,,,
-Swap,CFDXX,,,,,,,,,,,,
-Swap,CFD,CN,GS,Check OMS,,,,,,,Check email against OMS trade,,
-Swap,CFD,CN,GS,Check NT,,,,,,,Check email against NT trade,,
-Swap,CFD,CN,GS,Record commision,,,,,,,Record the commission of GS in today's CN swap,,
-Swap,CFD,CN,NOMURA,,,,,,,,,,
-Swap,CFD,HK,NOMURA,,,,,,,,,,
-Others,RTL,,,,,,,,,,,,
+Bond,UST,UST checking,,,,,,,,,Load the past,C:\Users\axie\Desktop\RTL.py,Please input RTL
