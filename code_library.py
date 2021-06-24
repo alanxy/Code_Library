@@ -29,8 +29,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.db = pd.read_csv("code_test.csv")
-        self.LEVEL = self.db.shape[1] - 3 # hardcoded
+        self.db = pd.read_csv("code.csv")
+        self.LEVEL = self.db.shape[1] - 4 # hardcoded
 
         self.setWindowTitle("Code Library")
 
@@ -43,13 +43,17 @@ class MainWindow(QMainWindow):
         des_label_title = QLabel("Description:")
         self.des_label = QLabel("")
         self.des_label.setWordWrap(True)
+        dir_label_title = QLabel("Source file:")
+        self.dir_label = QLabel("")
         des_layout = QVBoxLayout()
-        des_layout.addWidget(des_label_title)
-        des_layout.addWidget(self.des_label)
+        des_layout.addWidget(des_label_title, 1)
+        des_layout.addWidget(self.des_label, 7)
+        des_layout.addWidget(dir_label_title, 1)
+        des_layout.addWidget(self.dir_label, 1)
 
         des_layout.setAlignment(Qt.AlignTop)
-        # des_label_title.setAlignment(Qt.AlignTop)
-        # self.des_label.setAlignment(Qt.AlignTop)
+        self.des_label.setAlignment(Qt.AlignTop)
+        self.dir_label.setAlignment(Qt.AlignTop)
 
         main_layout.addLayout(self.stacklayout, 5)
         main_layout.addLayout(des_layout, 5)
@@ -62,7 +66,7 @@ class MainWindow(QMainWindow):
         self.list = [ListWidget(i) for i in range(self.LEVEL)]
         for i in self.list:
             i.itemClicked.connect(self.listClick)
-            # i.setSortingEnabled(True)
+            i.setSortingEnabled(True)
 
         # set up the first list
         self.list[0].setup(sorted(set(self.db.iloc[:,0])))
@@ -76,14 +80,15 @@ class MainWindow(QMainWindow):
         menu_layout.addWidget(self.back_btn)
         menu_layout.addWidget(self.path_label)
 
-        self.run_btn = QPushButton("open")
+        self.run_btn = QPushButton("run")
         self.run_btn.setEnabled(False)
+        self.run_btn.index = -1
         self.run_btn.pressed.connect(self.openFile)
         run_layout.addWidget(self.run_btn)
 
-        self.test_btn = QPushButton("run")
-        self.test_btn.pressed.connect(self.test)
-        run_layout.addWidget(self.test_btn)
+        # self.test_btn = QPushButton("run")
+        # self.test_btn.pressed.connect(self.test)
+        # run_layout.addWidget(self.test_btn)
 
         for i in self.list:
             self.stacklayout.addWidget(i)
@@ -97,7 +102,7 @@ class MainWindow(QMainWindow):
         print("clicked list " + str(idx))
         if idx >= self.LEVEL - 1:
             print("ready to run")
-            self.run_btn.setEnabled(True)
+            self.fileClick()
         else:
             # print(self.list[0].currentItem().text())
             selected = self.list[idx].currentItem().text()
@@ -110,11 +115,7 @@ class MainWindow(QMainWindow):
                 print(self.db.iloc[row, idx+1].values[0])
                 print(type(self.db.iloc[row, idx+1].values[0]))
                 if (not isinstance(self.db.iloc[row, idx+1].values[0], str)) and math.isnan(self.db.iloc[row, idx+1]):
-                    self.run_btn.setEnabled(True)
-                    try:
-                        self.des_label.setText(self.db['description'][row].values[0])
-                    except:
-                        self.des_label.setText("")
+                    self.fileClick()
                     return
 
             # print(self.db[self.db.iloc[:,0] == self.list[0].currentItem().text()].iloc[:,1].values)
@@ -125,15 +126,34 @@ class MainWindow(QMainWindow):
 
             self.back_btn.setEnabled(True)
             self.run_btn.setEnabled(False)
+            self.run_btn.index = -1
 
         self.updatePath(idx)
 
+    def fileClick(self):
+        self.run_btn.setEnabled(True)
+        idx = self.stacklayout.currentIndex()
+        current_item = self.list[idx].currentItem().text()
+        self.run_btn.index = self.list[idx].map(current_item)[0]
+        try:
+            self.dir_label.setText(self.db['directory'].values[self.list[idx].map(current_item)][0])
+        except:
+            self.dir_label.setText("")
+            self.run_btn.setEnabled(False)
+            self.run_btn.index = -1
+        try:
+            self.des_label.setText(self.db['description'].values[self.list[idx].map(current_item)][0])
+        except:
+            self.des_label.setText("")
+
     def goBack(self):
         self.des_label.setText("")
+        self.dir_label.setText("")
         idx = self.stacklayout.currentIndex()
         self.list[idx].clear()
         self.stacklayout.setCurrentIndex(idx-1)
         self.run_btn.setEnabled(False)
+        self.run_btn.index = -1
         if idx - 1 <= 0:
             self.back_btn.setEnabled(False)
             self.path_label.setText("")
@@ -147,12 +167,22 @@ class MainWindow(QMainWindow):
         self.path_label.setText(" > ".join(path_list))
 
     def openFile(self):
-        idx = self.stacklayout.currentIndex()
-        current_item = self.list[idx].currentItem().text()
-        print(self.db.iloc[self.list[idx].map(current_item), -1].values[0])
-        os.system("start " + self.db.iloc[self.list[idx].map(current_item), -1].values[0])
-        # MACOS os.system("open " + )
-        # Windows os.system("start " + )
+        file = self.dir_label.text()
+        extension = file.split(".")[-1]
+        if extension == "csv":
+            os.system("start " + file)
+            # MACOS: os.system("open " + filename)
+            # Windows: os.system("start " + filename)
+        elif extension == "py":
+            if isinstance(self.db['require_input'].values[self.run_btn.index], str):
+                question = self.db['require_input'].values[self.run_btn.index]
+                text, ok = QInputDialog.getText(self, 'Input', question)
+                if ok:
+                    os.system("python " + file + " " + str(text))
+                else:
+                    return
+            else:
+                os.system("python " + file)
 
     def getCurrentSelectedRows(self):
         idx = self.stacklayout.currentIndex()
@@ -163,15 +193,16 @@ class MainWindow(QMainWindow):
             prev_selected = self.list[idx-1].currentItem().text()
             return self.list[idx-1].map(prev_selected)
 
-    def test(self):
-        idx = self.stacklayout.currentIndex()
-        current_item = self.list[idx].currentItem().text()
-        text, ok = QInputDialog.getText(self, 'Input', 'RTL name:')
-        print("python " + self.db.iloc[self.list[idx].map(current_item), -1].values[0] + " " + str(text))
-        os.system("python " + self.db.iloc[self.list[idx].map(current_item), -1].values[0] + " " + str(text))
+    # def test(self):
+    #     idx = self.stacklayout.currentIndex()
+    #     current_item = self.list[idx].currentItem().text()
+    #     text, ok = QInputDialog.getText(self, 'Input', 'RTL name:')
+    #     print("python " + self.db.iloc[self.list[idx].map(current_item), -1].values[0] + " " + str(text))
+    #     os.system("python " + self.db.iloc[self.list[idx].map(current_item), -1].values[0] + " " + str(text))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MainWindow()
+    win.resize(600, 400)
     win.show()
     sys.exit(app.exec_())
