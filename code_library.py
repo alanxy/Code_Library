@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 import sys
 import os
 import pandas as pd
+import math
 
 class ListWidget(QListWidget):
     def __init__(self, idx):
@@ -11,22 +12,25 @@ class ListWidget(QListWidget):
         self.idx = idx
 
     def setup(self, list):
-        for i in list:
+        for i in set(list):
             self.addItem(i)
 
     def createMap(self, df):
-        item_list = set(df.iloc[:, self.idx])
+        item_list = set(self.filter_nan(df.iloc[:, self.idx]))
         self.item2index = {i: df[df.iloc[:,self.idx] == i].index for i in item_list}
 
     def map(self, current_item):
         return self.item2index[current_item]
 
+    def filter_nan(self, df):
+        return df[df.notna()]
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.db = pd.read_csv("code.csv")
-        self.LEVEL = self.db.shape[1] - 1 # hardcoded
+        self.db = pd.read_csv("code_test.csv")
+        self.LEVEL = self.db.shape[1] - 3 # hardcoded
 
         self.setWindowTitle("Code Library")
 
@@ -37,7 +41,7 @@ class MainWindow(QMainWindow):
         self.stacklayout = QStackedLayout()
 
         des_label_title = QLabel("Description:")
-        self.des_label = QLabel("haha")
+        self.des_label = QLabel("")
         self.des_label.setWordWrap(True)
         des_layout = QVBoxLayout()
         des_layout.addWidget(des_label_title)
@@ -81,9 +85,8 @@ class MainWindow(QMainWindow):
         self.test_btn.pressed.connect(self.test)
         run_layout.addWidget(self.test_btn)
 
-        # hardcoded
-        self.stacklayout.addWidget(self.list[0])
-        self.stacklayout.addWidget(self.list[1])
+        for i in self.list:
+            self.stacklayout.addWidget(i)
 
         widget = QWidget()
         widget.setLayout(pagelayout)
@@ -91,23 +94,42 @@ class MainWindow(QMainWindow):
 
     def listClick(self):
         idx = self.stacklayout.currentIndex()
+        print("clicked list " + str(idx))
         if idx >= self.LEVEL - 1:
             print("ready to run")
             self.run_btn.setEnabled(True)
         else:
+            # print(self.list[0].currentItem().text())
+            selected = self.list[idx].currentItem().text()
+            print("length is " + str(len(self.db.iloc[self.list[idx].map(selected)])))
+            print(str(self.db.iloc[self.list[idx].map(selected)]))
+            if len(self.db.iloc[self.list[idx].map(selected)]) == 1:
+                row = self.db.iloc[self.list[idx].map(selected)].index
+                print(row)
+                print(idx)
+                print(self.db.iloc[row, idx+1].values[0])
+                print(type(self.db.iloc[row, idx+1].values[0]))
+                if (not isinstance(self.db.iloc[row, idx+1].values[0], str)) and math.isnan(self.db.iloc[row, idx+1]):
+                    self.run_btn.setEnabled(True)
+                    try:
+                        self.des_label.setText(self.db['description'][row].values[0])
+                    except:
+                        self.des_label.setText("")
+                    return
+
+            # print(self.db[self.db.iloc[:,0] == self.list[0].currentItem().text()].iloc[:,1].values)
+            self.list[idx+1].clear()
+            self.list[idx+1].setup(sorted(self.db.iloc[self.list[idx].map(selected)].iloc[:,idx+1].values))
+            self.stacklayout.setCurrentIndex(idx+1)
+            self.list[idx+1].createMap(self.db.iloc[self.getCurrentSelectedRows(), :])
+
             self.back_btn.setEnabled(True)
             self.run_btn.setEnabled(False)
-            # print(self.list[0].currentItem().text())
-            selected = self.list[0].currentItem().text()
-            # print(self.db[self.db.iloc[:,0] == self.list[0].currentItem().text()].iloc[:,1].values)
-            self.list[1].clear()
-            self.list[1].setup(sorted(self.db[self.db.iloc[:,0] == self.list[0].currentItem().text()].iloc[:,1].values))
-            self.stacklayout.setCurrentIndex(idx+1)
-            self.list[1].createMap(self.db.iloc[self.getCurrentSelectedRows(), :])
 
         self.updatePath(idx)
 
     def goBack(self):
+        self.des_label.setText("")
         idx = self.stacklayout.currentIndex()
         self.list[idx].clear()
         self.stacklayout.setCurrentIndex(idx-1)
@@ -116,7 +138,7 @@ class MainWindow(QMainWindow):
             self.back_btn.setEnabled(False)
             self.path_label.setText("")
         else:
-            self.updatePath(idx)
+            self.updatePath(idx-2)
 
     def updatePath(self, idx):
         path_list = []
@@ -137,6 +159,7 @@ class MainWindow(QMainWindow):
         if idx <= 0:
             return range(len(self.db))
         else:
+            print("selecting from list " + str(idx))
             prev_selected = self.list[idx-1].currentItem().text()
             return self.list[idx-1].map(prev_selected)
 
