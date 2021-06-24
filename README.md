@@ -12,4 +12,8 @@ There are a total of 10 levels that could be added and is possible to extend. Af
 
 ![alt text](https://github.com/alanxy/code_library/blob/master/documentation/UST_checking_GUI.PNG "UST_checking_GUI")
 
+By clicking the "<" button, you will be able to go back to the previous level. 
+
+By clicking the run button, you will be able to run your source file.
+
 Remember to restart the application after making changes in the csv.
