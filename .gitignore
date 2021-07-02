@@ -1,1 +1,5 @@
 testing/
+build/
+dist/
+__pycache__/
+code_library.spec

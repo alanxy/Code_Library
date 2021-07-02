@@ -5,25 +5,7 @@ import sys
 import os
 import pandas as pd
 import math
-
-class ListWidget(QListWidget):
-    def __init__(self, idx):
-        super().__init__()
-        self.idx = idx
-
-    def setup(self, list):
-        for i in set(list):
-            self.addItem(i)
-
-    def createMap(self, df):
-        item_list = set(self.filter_nan(df.iloc[:, self.idx]))
-        self.item2index = {i: df[df.iloc[:,self.idx] == i].index for i in item_list}
-
-    def map(self, current_item):
-        return self.item2index[current_item]
-
-    def filter_nan(self, df):
-        return df[df.notna()]
+from customized_widget import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -99,21 +81,21 @@ class MainWindow(QMainWindow):
 
     def listClick(self):
         idx = self.stacklayout.currentIndex()
-        print("clicked list " + str(idx))
+        # print("clicked list " + str(idx))
         if idx >= self.LEVEL - 1:
-            print("ready to run")
+            # print("ready to run")
             self.fileClick()
         else:
             # print(self.list[0].currentItem().text())
             selected = self.list[idx].currentItem().text()
-            print("length is " + str(len(self.db.iloc[self.list[idx].map(selected)])))
-            print(str(self.db.iloc[self.list[idx].map(selected)]))
+            # print("length is " + str(len(self.db.iloc[self.list[idx].map(selected)])))
+            # print(str(self.db.iloc[self.list[idx].map(selected)]))
             if len(self.db.iloc[self.list[idx].map(selected)]) == 1:
                 row = self.db.iloc[self.list[idx].map(selected)].index
-                print(row)
-                print(idx)
-                print(self.db.iloc[row, idx+1].values[0])
-                print(type(self.db.iloc[row, idx+1].values[0]))
+                # print(row)
+                # print(idx)
+                # print(self.db.iloc[row, idx+1].values[0])
+                # print(type(self.db.iloc[row, idx+1].values[0]))
                 if (not isinstance(self.db.iloc[row, idx+1].values[0], str)) and math.isnan(self.db.iloc[row, idx+1]):
                     self.fileClick()
                     return
@@ -189,7 +171,7 @@ class MainWindow(QMainWindow):
         if idx <= 0:
             return range(len(self.db))
         else:
-            print("selecting from list " + str(idx))
+            # print("selecting from list " + str(idx))
             prev_selected = self.list[idx-1].currentItem().text()
             return self.list[idx-1].map(prev_selected)
 
