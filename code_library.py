@@ -5,6 +5,7 @@ import sys
 import os
 import pandas as pd
 import math
+import importlib.util
 from customized_widget import *
 
 class MainWindow(QMainWindow):
@@ -151,18 +152,29 @@ class MainWindow(QMainWindow):
     def openFile(self):
         file = self.dir_label.text()
         extension = file.split(".")[-1]
-        if extension == "csv":
+        if extension == "csv" or extension == "xlsm":
             os.system("start " + file)
             # MACOS: os.system("open " + filename)
             # Windows: os.system("start " + filename)
         elif extension == "py":
             if isinstance(self.db['require_input'].values[self.run_btn.index], str):
-                question = self.db['require_input'].values[self.run_btn.index]
-                text, ok = QInputDialog.getText(self, 'Input', question)
-                if ok:
-                    os.system("python " + file + " " + str(text))
-                else:
-                    return
+                input = self.db['require_input'].values[self.run_btn.index]
+                dialog = MultiInputDialog(input.split(";"))
+                if dialog.exec():
+                    retval = dialog.getInputs()
+                    spec = importlib.util.spec_from_file_location("module", file)
+                    foo = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(foo)
+                    try:
+                        ret_msg = foo.function(retval)
+                        print(ret_msg)
+                        if ret_msg is not None:
+                            msg = QMessageBox()
+                            msg.setText(ret_msg)
+                            msg.setWindowTitle("Notification")
+                            retval = msg.exec_()
+                    except:
+                        print("The function is buggy.")
             else:
                 os.system("python " + file)
 
