@@ -165,16 +165,18 @@ class MainWindow(QMainWindow):
                     spec = importlib.util.spec_from_file_location("module", file)
                     foo = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(foo)
-                    try:
-                        ret_msg = foo.function(retval)
-                        print(ret_msg)
-                        if ret_msg is not None:
-                            msg = QMessageBox()
-                            msg.setText(ret_msg)
-                            msg.setWindowTitle("Notification")
-                            retval = msg.exec_()
-                    except:
-                        print("The function is buggy.")
+                    ret_msg = foo.function(retval)
+                    print(ret_msg)
+                    # try:
+                    #     ret_msg = foo.function(retval)
+                    #     print(ret_msg)
+                    #     if ret_msg is not None:
+                    #         msg = QMessageBox()
+                    #         msg.setText(ret_msg)
+                    #         msg.setWindowTitle("Notification")
+                    #         retval = msg.exec_()
+                    # except:
+                    #     print("The function is buggy.")
             else:
                 os.system("python " + file)
 

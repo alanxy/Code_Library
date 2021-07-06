@@ -1,3 +1,4 @@
 lv1,lv2,lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,,description,directory,require_input
-Bond,UST,UST checking,,,,,,,,,Load UST that settling today from last 14 days' FI Blotter and send email(s) to corresponding PB,S:\AlanXie\Final_UST.py,
-Testing,Testing,,,,,,,,,,Testing,C:\Users\axie\Desktop\test\code_library_function_testing.py,name;action;code;quantity;price
+Bond,UST,UST checking,,,,,,,,,Load UST that settling today from last 14 days' FI Blotter and send email(s) to corresponding PB,S:\AlanXie\code_library\codes\Final_UST.py,
+Others,Testing,,,,,,,,,,Testing,S:\AlanXie\code_library\codes\code_library_function_testing.py,name;action;code;quantity;price
+Others,RTL,,,,,,,,,,"Update restricted trade list, please type the security. If there are multiple ones, please separate with a semicolon (;)",S:\AlanXie\code_library\codes\RTL.py,security
