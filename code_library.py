@@ -12,7 +12,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.db = pd.read_csv("code.csv")
+        self.db = pd.read_csv("S:/AlanXie/code.csv")
         self.LEVEL = self.db.shape[1] - (len(self.db.columns) - [i for i, word in enumerate(self.db.columns) if word.startswith('Unnamed:')][0])
 
         self.setWindowTitle("Code Library")
@@ -160,23 +160,40 @@ class MainWindow(QMainWindow):
             if isinstance(self.db['require_input'].values[self.run_btn.index], str):
                 input = self.db['require_input'].values[self.run_btn.index]
                 dialog = MultiInputDialog(input.split(";"))
+                if self.db['default'].values[self.run_btn.index] == 'Y':
+                    spec = importlib.util.spec_from_file_location("module", file)
+                    foo = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(foo)
+                    try:
+                        default_list = foo.setup()
+                    except:
+                        print("Error on setup")
+                        return
+                    dialog.setDefault(default_list)
                 if dialog.exec():
                     retval = dialog.getInputs()
                     spec = importlib.util.spec_from_file_location("module", file)
                     foo = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(foo)
-                    ret_msg = foo.function(retval)
-                    print(ret_msg)
-                    # try:
-                    #     ret_msg = foo.function(retval)
-                    #     print(ret_msg)
-                    #     if ret_msg is not None:
-                    #         msg = QMessageBox()
-                    #         msg.setText(ret_msg)
-                    #         msg.setWindowTitle("Notification")
-                    #         retval = msg.exec_()
-                    # except:
-                    #     print("The function is buggy.")
+                    try:
+                        ret_msg = foo.function(retval)
+                    except:
+                        print("The source function is buggy.")
+
+                    if ret_msg is not None and ret_msg["status"] == 0:
+                        msg = QMessageBox()
+                        msg.setText("Error: " + ret_msg["msg"])
+                        msg.setWindowTitle("Fail")
+                        retval = msg.exec_()
+                    elif ret_msg is not None and ret_msg["status"] == 1:
+                        msg = QMessageBox()
+                        msg.setText(ret_msg["msg"])
+                        msg.setWindowTitle("Successful")
+                        retval = msg.exec_()
+
+                        if ret_msg["type"] == "dir":
+                            os.startfile(ret_msg["value"])
+
             else:
                 os.system("python " + file)
 
