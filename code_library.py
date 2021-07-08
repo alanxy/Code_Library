@@ -172,27 +172,33 @@ class MainWindow(QMainWindow):
                     dialog.setDefault(default_list)
                 if dialog.exec():
                     retval = dialog.getInputs()
+
                     spec = importlib.util.spec_from_file_location("module", file)
                     foo = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(foo)
-                    try:
-                        ret_msg = foo.function(retval)
-                    except:
-                        print("The source function is buggy.")
 
-                    if ret_msg is not None and ret_msg["status"] == 0:
-                        msg = QMessageBox()
-                        msg.setText("Error: " + ret_msg["msg"])
-                        msg.setWindowTitle("Fail")
-                        retval = msg.exec_()
-                    elif ret_msg is not None and ret_msg["status"] == 1:
-                        msg = QMessageBox()
-                        msg.setText(ret_msg["msg"])
-                        msg.setWindowTitle("Successful")
-                        retval = msg.exec_()
+                    confirm_msg = foo.confirm(retval)
+                    reply = QMessageBox.question(self, 'Confirm', confirm_msg, QMessageBox.Yes | QMessageBox.No)
+                    if reply == QMessageBox.Yes:
+                        try:
+                            ret_msg = foo.function(retval)
+                        except:
+                            print("The source function is buggy.")
 
-                        if ret_msg["type"] == "dir":
-                            os.startfile(ret_msg["value"])
+                        if ret_msg is not None and ret_msg["status"] == 0:
+                            msg = QMessageBox()
+                            msg.setText("Error: " + ret_msg["msg"])
+                            msg.setWindowTitle("Fail")
+                            retval = msg.exec_()
+                        elif ret_msg is not None and ret_msg["status"] == 1:
+                            msg = QMessageBox()
+                            msg.setText(ret_msg["msg"])
+                            msg.setWindowTitle("Successful")
+                            retval = msg.exec_()
+
+                            if "type" in ret_msg:
+                                if ret_msg["type"] == "dir":
+                                    os.startfile(ret_msg["value"])
 
             else:
                 os.system("python " + file)
