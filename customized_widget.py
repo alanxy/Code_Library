@@ -40,3 +40,7 @@ class MultiInputDialog(QDialog):
 
     def getInputs(self):
         return ({self.question_list[i]: self.line_edit_list[i].text() for i in range(len(self.question_list))})
+
+    def setDefault(self, default_list):
+        for i in range(len(default_list)):
+            self.line_edit_list[i].setText(default_list[i])

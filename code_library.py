@@ -5,13 +5,14 @@ import sys
 import os
 import pandas as pd
 import math
+import importlib.util
 from customized_widget import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.db = pd.read_csv("code.csv")
+        self.db = pd.read_csv("S:/AlanXie/code.csv")
         self.LEVEL = self.db.shape[1] - (len(self.db.columns) - [i for i, word in enumerate(self.db.columns) if word.startswith('Unnamed:')][0])
 
         self.setWindowTitle("Code Library")
@@ -151,18 +152,54 @@ class MainWindow(QMainWindow):
     def openFile(self):
         file = self.dir_label.text()
         extension = file.split(".")[-1]
-        if extension == "csv":
+        if extension == "csv" or extension == "xlsm":
             os.system("start " + file)
             # MACOS: os.system("open " + filename)
             # Windows: os.system("start " + filename)
         elif extension == "py":
             if isinstance(self.db['require_input'].values[self.run_btn.index], str):
-                question = self.db['require_input'].values[self.run_btn.index]
-                text, ok = QInputDialog.getText(self, 'Input', question)
-                if ok:
-                    os.system("python " + file + " " + str(text))
-                else:
-                    return
+                input = self.db['require_input'].values[self.run_btn.index]
+                dialog = MultiInputDialog(input.split(";"))
+                if self.db['default'].values[self.run_btn.index] == 'Y':
+                    spec = importlib.util.spec_from_file_location("module", file)
+                    foo = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(foo)
+                    try:
+                        default_list = foo.setup()
+                    except:
+                        print("Error on setup")
+                        return
+                    dialog.setDefault(default_list)
+                if dialog.exec():
+                    retval = dialog.getInputs()
+
+                    spec = importlib.util.spec_from_file_location("module", file)
+                    foo = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(foo)
+
+                    confirm_msg = foo.confirm(retval)
+                    reply = QMessageBox.question(self, 'Confirm', confirm_msg, QMessageBox.Yes | QMessageBox.No)
+                    if reply == QMessageBox.Yes:
+                        try:
+                            ret_msg = foo.function(retval)
+                        except:
+                            print("The source function is buggy.")
+
+                        if ret_msg is not None and ret_msg["status"] == 0:
+                            msg = QMessageBox()
+                            msg.setText("Error: " + ret_msg["msg"])
+                            msg.setWindowTitle("Fail")
+                            retval = msg.exec_()
+                        elif ret_msg is not None and ret_msg["status"] == 1:
+                            msg = QMessageBox()
+                            msg.setText(ret_msg["msg"])
+                            msg.setWindowTitle("Successful")
+                            retval = msg.exec_()
+
+                            if "type" in ret_msg:
+                                if ret_msg["type"] == "dir":
+                                    os.startfile(ret_msg["value"])
+
             else:
                 os.system("python " + file)
 

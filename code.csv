@@ -1,2 +1,0 @@
-lv1,lv2,lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,,description,directory,require_input
-Bond,UST,UST checking,,,,,,,,,Load UST that settling today from last 14 days' FI Blotter and send email(s) to corresponding PB,S:\AlanXie\Final_UST.py,
