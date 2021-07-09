@@ -146,12 +146,13 @@ class ListInputDialog(QDialog):
         return [self.list_layout.itemAt(i).getInput() for i in range(self.list_layout.count())]
 
     def setDefault(self, default_list):
-        for i in range(len(default_list)):
+        self.list_layout.itemAt(0).setInput(default_list[0])
+        for i in range(1, len(default_list)):
+            self.addRow()
             self.list_layout.itemAt(i).setInput(default_list[i])
 
     def addRow(self):
         self.list_layout.addLayout(self.inputRow())
-        print(self.getInputs())
 
     class inputRow(QHBoxLayout):
         def __init__(self):
