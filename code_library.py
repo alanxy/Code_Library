@@ -69,9 +69,11 @@ class MainWindow(QMainWindow):
         self.run_btn.pressed.connect(self.openFile)
         run_layout.addWidget(self.run_btn)
 
-        # self.test_btn = QPushButton("run")
-        # self.test_btn.pressed.connect(self.test)
-        # run_layout.addWidget(self.test_btn)
+        # Testing!!!
+        self.test_btn = QPushButton("test")
+        self.test_btn.pressed.connect(self.test)
+        run_layout.addWidget(self.test_btn)
+        # Testing!!!
 
         for i in self.list:
             self.stacklayout.addWidget(i)
@@ -159,7 +161,12 @@ class MainWindow(QMainWindow):
         elif extension == "py":
             if isinstance(self.db['require_input'].values[self.run_btn.index], str):
                 input = self.db['require_input'].values[self.run_btn.index]
-                dialog = MultiInputDialog(input.split(";"))
+
+                if self.db['input_type'].values[self.run_btn.index] == "form":
+                    dialog = MultiInputDialog(input.split(";"))
+                elif self.db['input_type'].values[self.run_btn.index] == "list":
+                    dialog = ListInputDialog(input)
+
                 if self.db['default'].values[self.run_btn.index] == 'Y':
                     spec = importlib.util.spec_from_file_location("module", file)
                     foo = importlib.util.module_from_spec(spec)
@@ -212,12 +219,12 @@ class MainWindow(QMainWindow):
             prev_selected = self.list[idx-1].currentItem().text()
             return self.list[idx-1].map(prev_selected)
 
-    # def test(self):
-    #     idx = self.stacklayout.currentIndex()
-    #     current_item = self.list[idx].currentItem().text()
-    #     text, ok = QInputDialog.getText(self, 'Input', 'RTL name:')
-    #     print("python " + self.db.iloc[self.list[idx].map(current_item), -1].values[0] + " " + str(text))
-    #     os.system("python " + self.db.iloc[self.list[idx].map(current_item), -1].values[0] + " " + str(text))
+    # Testing!!!
+    def test(self):
+        dialog = ListInputDialog("RTL")
+        if dialog.exec():
+            print("hahaha")
+    # Testing!!!
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
