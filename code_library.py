@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import math
 import importlib.util
+import subprocess
 from customized_widget import *
 
 class MainWindow(QMainWindow):
@@ -233,8 +234,19 @@ class MainWindow(QMainWindow):
 
             # run python that doesn't need input, python is required on the user's computer
             # but no customization is reuiqred on the python scirpt
+            # all printed lines will be shown in a pop up window after execution
             else:
-                os.system("python " + file)
+                ret = subprocess.Popen("python " + file, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                ret_msg = ""
+                for line in ret.stdout.readlines():
+                    ret_msg += line.decode("utf-8")
+                    ret_msg += "\n"
+                if ret_msg != "":
+                    msg = QMessageBox()
+                    msg.setText(ret_msg)
+                    msg.setWindowTitle("Message")
+                    retval = msg.exec_()
+                ret.stdout.close()
 
     # get indices of items in the database which are under items in the currently list
     def getCurrentSelectedRows(self):
