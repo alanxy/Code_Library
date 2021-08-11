@@ -8,6 +8,11 @@ import math
 import importlib.util
 import subprocess
 from customized_widget import *
+import logging
+import getpass
+import datetime
+
+logging.basicConfig(level=logging.INFO, filename = "C:/Users/" + getpass.getuser() + "/Downloads/code_library_logging_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -94,6 +99,7 @@ class MainWindow(QMainWindow):
 
     # called when items in the list is clicked
     def listClick(self):
+        logging.info("clicked item in the list, go to next level")
         # get the current level
         idx = self.stacklayout.currentIndex()
         # if the last level is reached
@@ -124,6 +130,7 @@ class MainWindow(QMainWindow):
     # called when the item in the list clicked is a file
     # update the description on the right and enable the run button at the bottom
     def fileClick(self):
+        logging.info("clicked a file, ready to run")
         self.run_btn.setEnabled(True)
         idx = self.stacklayout.currentIndex()
         current_item = self.list[idx].currentItem().text()
@@ -141,6 +148,7 @@ class MainWindow(QMainWindow):
 
     # called when the back button at the top left corner is clicked, going back to the previous level
     def goBack(self):
+        logging.info("clicked back button")
         self.des_label.setText("")
         self.dir_label.setText("")
         idx = self.stacklayout.currentIndex()
@@ -156,13 +164,16 @@ class MainWindow(QMainWindow):
 
     # update the path in the menu
     def updatePath(self, idx):
+        logging.info("updating path")
         path_list = []
         for i in range(idx+1):
             path_list.append(self.list[i].currentItem().text())
         self.path_label.setText(" > ".join(path_list))
+        logging.info("path update finish")
 
     # called when the run button in clicked, run the file
     def openFile(self):
+        logging.info("running file")
         file = self.dir_label.text()
         extension = file.split(".")[-1]
         # simply open the excel file
@@ -247,6 +258,7 @@ class MainWindow(QMainWindow):
                     msg.setWindowTitle("Message")
                     retval = msg.exec_()
                 ret.stdout.close()
+        logging.info("file run finish")
 
     # get indices of items in the database which are under items in the currently list
     def getCurrentSelectedRows(self):
