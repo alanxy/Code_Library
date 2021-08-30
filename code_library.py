@@ -81,13 +81,13 @@ class MainWindow(QMainWindow):
         self.run_btn.pressed.connect(self.openFile)
         run_layout.addWidget(self.run_btn)
 
-        # Testing!!!
-        # uncomment the below lines and add test function in test()
-        # remember to also uncomment the test() function below
-        self.test_btn = QPushButton("test")
-        self.test_btn.pressed.connect(self.test)
-        run_layout.addWidget(self.test_btn)
-        # Testing!!!
+        # # Testing!!!
+        # # uncomment the below lines and add test function in test()
+        # # remember to also uncomment the test() function below
+        # self.test_btn = QPushButton("test")
+        # self.test_btn.pressed.connect(self.test)
+        # run_layout.addWidget(self.test_btn)
+        # # Testing!!!
 
         # add empty list to list
         for i in self.list:
@@ -191,6 +191,7 @@ class MainWindow(QMainWindow):
         elif extension == "py":
             logging.info("run python")
             print("run " + file)
+            logging.info("run python message printed")
             # if input is required for the python file
             if isinstance(self.db['require_input'].values[self.run_btn.index], str):
                 input = self.db['require_input'].values[self.run_btn.index]
@@ -280,14 +281,14 @@ class MainWindow(QMainWindow):
             return self.list[idx-1].map(prev_selected)
         logging.info("get current selected rows finished")
 
-    # Testing!!!
-    # uncomment this and add your test function here
-    # rememeber to also uncomment the button creation codes above
-    def test(self):
-        dialog = ListInputDialog("RTL")
-        if dialog.exec():
-            print("hahaha")
-    # Testing!!!
+    # # Testing!!!
+    # # uncomment this and add your test function here
+    # # rememeber to also uncomment the button creation codes above
+    # def test(self):
+    #     dialog = ListInputDialog("RTL")
+    #     if dialog.exec():
+    #         print("hahaha")
+    # # Testing!!!
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
