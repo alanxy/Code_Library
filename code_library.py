@@ -249,9 +249,10 @@ class MainWindow(QMainWindow):
                                     if ret_msg["type"] == "dir":
                                         os.startfile(ret_msg["value"])
 
-                        except:
+                        except Exception as e:
                             # error message if the python fucntion is buggy
-                            print("The source function is buggy.")
+                            print("The source function is buggy:")
+                            print(e)
 
             # run python that doesn't need input, python is required on the user's computer
             # but no customization is reuiqred on the python scirpt
