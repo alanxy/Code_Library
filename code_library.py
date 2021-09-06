@@ -11,8 +11,11 @@ from customized_widget import *
 import logging
 import getpass
 import datetime
+import ctypes
 
 logging.basicConfig(level=logging.INFO, filename = "C:/Users/" + getpass.getuser() + "/Downloads/code_library_logging_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
+
+ctypes.windll.kernel32.SetConsoleMode(kernel32.GetStdHandle(-10), 128) # disable winsows console quick edit mode ref: https://stackoverflow.com/questions/13599822/command-prompt-gets-stuck-and-continues-on-enter-key-press
 
 class MainWindow(QMainWindow):
     def __init__(self):
