@@ -87,10 +87,13 @@ class ListInputDialog(QDialog):
         return [self.list_layout.itemAt(i).getInput() for i in range(self.list_layout.count())]
 
     def setDefault(self, default_list):
-        self.list_layout.itemAt(0).setInput(default_list[0])
-        for i in range(1, len(default_list)):
+        if len(default_list) > 0:
+            self.list_layout.itemAt(0).setInput(default_list[0])
+            for i in range(1, len(default_list)):
+                self.addRow()
+                self.list_layout.itemAt(i).setInput(default_list[i])
+        else:
             self.addRow()
-            self.list_layout.itemAt(i).setInput(default_list[i])
 
     def addRow(self):
         self.list_layout.addLayout(self.inputRow())
