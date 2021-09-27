@@ -13,7 +13,8 @@ import getpass
 import datetime
 import ctypes
 
-logging.basicConfig(level=logging.INFO, filename = "C:/Users/" + getpass.getuser() + "/Downloads/code_library_logging_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
+logging.basicConfig(level=logging.INFO, filename = "S:/AlanXie/temp/code_library_log/code_library_logging_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
+user = getpass.getuser()
 
 # disable winsows console quick edit mode ref: https://stackoverflow.com/questions/13599822/command-prompt-gets-stuck-and-continues-on-enter-key-press
 kernel32 = ctypes.windll.kernel32
@@ -22,6 +23,8 @@ kernel32.SetConsoleMode(kernel32.GetStdHandle(-10), 128)
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        logging.info(user + " started")
 
         # read database from csv on shared drive
         self.db = pd.read_csv("S:/AlanXie/code.csv")
