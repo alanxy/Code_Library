@@ -189,7 +189,7 @@ class MainWindow(QMainWindow):
         extension = file.split(".")[-1]
         logging.info("get filename: " + file + " . ready to run")
         # simply open the excel file
-        if extension == "csv" or extension == "xlsm":
+        if extension == "csv" or extension == "xlsm" or extension == "xlsx":
             logging.info("open excel")
             os.startfile(file)
             print("open " + file)
