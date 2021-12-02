@@ -13,7 +13,7 @@ import getpass
 import datetime
 import ctypes
 
-logging.basicConfig(level=logging.INFO, filename = "S:/AlanXie/temp/code_library_log/code_library_logging_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
+logging.basicConfig(level=logging.ERROR, filename = "S:/AlanXie/temp/code_library_log/code_library_logging_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".log")
 user = getpass.getuser()
 
 # disable winsows console quick edit mode ref: https://stackoverflow.com/questions/13599822/command-prompt-gets-stuck-and-continues-on-enter-key-press
@@ -243,12 +243,14 @@ class MainWindow(QMainWindow):
                             # python file executed unsuccessfully
                             if ret_msg is not None and ret_msg["status"] == 0:
                                 msg = QMessageBox()
+                                msg.setTextInteractionFlags(Qt.TextSelectableByMouse)
                                 msg.setText("Error: " + ret_msg["msg"])
                                 msg.setWindowTitle("Fail")
                                 retval = msg.exec_()
                             # python file executed successfully
                             elif ret_msg is not None and ret_msg["status"] == 1:
                                 msg = QMessageBox()
+                                msg.setTextInteractionFlags(Qt.TextSelectableByMouse)
                                 msg.setText(ret_msg["msg"])
                                 msg.setWindowTitle("Successful")
                                 retval = msg.exec_()
@@ -273,6 +275,7 @@ class MainWindow(QMainWindow):
                     ret_msg += "\n"
                 if ret_msg != "":
                     msg = QMessageBox()
+                    msg.setTextInteractionFlags(Qt.TextSelectableByMouse)
                     msg.setText(ret_msg)
                     msg.setWindowTitle("Message")
                     retval = msg.exec_()
