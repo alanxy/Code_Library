@@ -210,6 +210,8 @@ class MainWindow(QMainWindow):
                 # if the input required is a list
                 elif self.db['input_type'].values[self.run_btn.index] == "list":
                     dialog = ListInputDialog(input)
+                elif self.db['input_type'].values[self.run_btn.index] == "file":
+                    dialog = FileDialog()
 
                 # if default text is needed
                 if self.db['default'].values[self.run_btn.index] == 'Y':

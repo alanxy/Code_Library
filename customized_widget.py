@@ -185,3 +185,11 @@ class ListInputDialog(QDialog):
 #                     self.line_edit_list.remove(self.line_edit_list[i])
 #                     self.button_list.remove(self.sender())
 #                     break
+
+# input dialog for a file
+class FileDialog(QFileDialog):
+    def __init__(self):
+        super().__init__()
+
+    def getInputs(self):
+        return self.selectedFiles()
