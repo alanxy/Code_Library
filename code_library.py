@@ -24,6 +24,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        #add keyboard support, details to be modified in newOnkeyPressEvent function
+        QMainWindow.keyPressEvent = self.newOnkeyPressEvent
+
         logging.info(user + " started")
 
         # read database from csv on shared drive
@@ -72,6 +75,7 @@ class MainWindow(QMainWindow):
         # set up the first list
         self.list[0].setup(sorted(set(self.db.iloc[:,0])))
         self.list[0].createMap(self.db.iloc[self.getCurrentSelectedRows()])
+        self.list[0].setCurrentRow(0)
 
         # add back button at the top left corner (in menu)
         self.back_btn = QPushButton("<")
@@ -105,6 +109,16 @@ class MainWindow(QMainWindow):
         widget.setLayout(pagelayout)
         self.setCentralWidget(widget)
 
+    #func for keyboard support
+    def newOnkeyPressEvent(self,e):
+        if e.key() == Qt.Key_Return or e.key() == Qt.Key_Right:
+            self.listClick()
+            if self.run_btn.isEnabled():
+                self.openFile()
+        elif e.key() == Qt.Key_Left:
+            if self.stacklayout.currentIndex() > 0:
+                self.goBack()
+
     # called when items in the list is clicked
     def listClick(self):
         logging.info("click list item")
@@ -127,6 +141,7 @@ class MainWindow(QMainWindow):
             self.list[idx+1].setup(sorted(self.db.iloc[self.list[idx].map(selected)].iloc[:,idx+1].values))
             self.stacklayout.setCurrentIndex(idx+1)
             self.list[idx+1].createMap(self.db.iloc[self.getCurrentSelectedRows(), :])
+            self.list[idx+1].setCurrentRow(0)
 
             self.back_btn.setEnabled(True)
             self.run_btn.setEnabled(False)
@@ -215,14 +230,29 @@ class MainWindow(QMainWindow):
 
                 # if default text is needed
                 if self.db['default'].values[self.run_btn.index] == 'Y':
-                    spec = importlib.util.spec_from_file_location("module", file)
-                    foo = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(foo)
+
+                    try:
+                        spec = importlib.util.spec_from_file_location("module", file)
+                        foo = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(foo)
+                    except Exception as e:
+                        msg = QMessageBox()
+                        msg.setWindowTitle("ERROR")
+                        msg.setIcon(QMessageBox.Critical)
+                        msg.setText("Failed to run code:\n" + str(e))
+                        msg.exec_()
+                        return
+
                     try:
                         default_list = foo.setup()
                     except:
-                        print("Error on setup")
+                        msg = QMessageBox()
+                        msg.setWindowTitle("ERROR")
+                        msg.setIcon(QMessageBox.Critical)
+                        msg.setText("Error on setup")
+                        msg.exec_()
                         return
+
                     dialog.setDefault(default_list)
 
                 # pop up the input dialog and wait for user input
@@ -230,9 +260,17 @@ class MainWindow(QMainWindow):
                     retval = dialog.getInputs()
                     logging.info("get input finished")
 
-                    spec = importlib.util.spec_from_file_location("module", file)
-                    foo = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(foo)
+                    try:
+                        spec = importlib.util.spec_from_file_location("module", file)
+                        foo = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(foo)
+                    except Exception as e:
+                        msg = QMessageBox()
+                        msg.setWindowTitle("ERROR")
+                        msg.setIcon(QMessageBox.Critical)
+                        msg.setText("Failed to run code:\n" + str(e))
+                        msg.exec_()
+                        return
 
                     # pop up the confirm dialog, python won't be executed if user chooses no
                     confirm_msg = foo.confirm(retval)
