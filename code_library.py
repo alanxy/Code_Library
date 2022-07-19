@@ -111,6 +111,7 @@ class MainWindow(QMainWindow):
 
     #func for keyboard support
     def newOnkeyPressEvent(self,e):
+
         if e.key() == Qt.Key_Return or e.key() == Qt.Key_Right:
             self.listClick()
             if self.run_btn.isEnabled():
@@ -308,7 +309,7 @@ class MainWindow(QMainWindow):
             # but no customization is reuiqred on the python scirpt
             # all printed lines will be shown in a pop up window after execution
             else:
-                ret = subprocess.Popen("python " + file, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                ret = subprocess.Popen("python \"" + file + "\"", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 ret_msg = ""
                 for line in ret.stdout.readlines():
                     ret_msg += line.decode("utf-8")
