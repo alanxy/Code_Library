@@ -127,5 +127,7 @@ class FileDialog(QFileDialog):
     def __init__(self):
         super().__init__()
 
+        self.setFileMode(QFileDialog.ExistingFiles)
+
     def getInputs(self):
         return self.selectedFiles()
